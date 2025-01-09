@@ -66,10 +66,6 @@ function parseJobList(jobData) {
       const agoTime =
         job.find(".job-search-card__listdate").text().trim() || "";
       return {
-        // position: position,
-        // company: company,
-        // date: date,
-        // jobUrl: jobUrl,
         position: position,
         company: company,
         companyLogo: companyLogo,
