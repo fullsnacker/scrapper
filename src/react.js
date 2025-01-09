@@ -11,7 +11,7 @@ async function runSequentially() {
   console.log(
     `${searchDate} - Searching positions with keyword = '${keyword}'... \n`
   );
-  console.log("Company,Position,Keyworkd,Date,URL");
+  console.log("Company,Position,Keyword,Date,URL");
 
   for (const start of starts) {
     try {
