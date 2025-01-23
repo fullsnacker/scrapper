@@ -13,11 +13,13 @@ axiosRetry(axios, {
   },
 });
 
-module.exports.query = (offset) => getJobs(offset);
-async function getJobs(offset) {
+module.exports.query = (offset, keyword) => getJobs(offset, keyword);
+async function getJobs(offset, keyword) {
   try {
     const myURL =
-      "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=react&location=Argentina&f_TPR=r86400&start=" +
+      "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=" +
+      keyword +
+      "&location=Argentina&f_TPR=r86400&start=" +
       offset +
       "&sortBy=DD";
     const userAgent = randomUseragent.getRandom();
@@ -34,7 +36,6 @@ async function getJobs(offset) {
     });
     const $ = cheerio.load(data);
     let allJobs = parseJobList(data);
-    // console.log("Found " + allJobs.length + " positions\n");
     return allJobs;
   } catch (error) {
     console.error("error");

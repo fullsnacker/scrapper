@@ -1,11 +1,10 @@
 {
   "name": "scrapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "linkedin job post scrapper",
   "main": "index.js",
   "scripts": {
-    "react": "node src/react.js",
-    "node": "node src/node.js"
+    "search": "node src/positionSearch.js"
   },
   "keywords": [
     "linkedin",
@@ -17,9 +16,6 @@
     "axios": "^0.27.2",
     "axios-retry": "^3.3.1",
     "cheerio": "^1.0.0-rc.12",
-    "colors": "^1.4.0",
-    "dotenv": "^16.0.3",
-    "mysql": "^2.18.1",
     "random-useragent": "^0.5.0"
   }
 }
