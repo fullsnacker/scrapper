@@ -1,0 +1,5 @@
+sudo mysqldump -u root --routines --triggers --no-create-db --databases newNova > newNova_dump.sql
+
+sudo mysql -u root -p
+
+SELECT * FROM newNova.to_review;
