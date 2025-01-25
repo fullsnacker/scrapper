@@ -4,7 +4,8 @@
   "description": "linkedin job post scrapper",
   "main": "index.js",
   "scripts": {
-    "search": "node src/positionSearch.js"
+    "search": "node src/positionSearch.js",
+    "one": "node src/detailSearch.js"
   },
   "keywords": [
     "linkedin",

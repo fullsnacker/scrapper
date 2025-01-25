@@ -1,9 +1,12 @@
 const fs = require("fs");
-const scrapper = require("./scrapper");
+const scrapper = require("./positionScrapper");
 const keywords = require("./data/keywords");
 
 let companies = "";
 let positions = "";
+let jobUrls = "const jobUrls = [\n";
+
+console.log("Starting the position scrapper");
 
 runSequentially();
 
@@ -24,6 +27,8 @@ async function runSequentially() {
   // This is a stored procedure that refreshes the id of the companies and positions tables
   positions += "CALL `newNova`.`id_refresher`();\n";
 
+  jobUrls += "];\n\nmodule.exports = jobUrls;";
+
   fs.writeFile("companies.csv", companies, (err) => {
     if (err) {
       console.error(err);
@@ -39,6 +44,14 @@ async function runSequentially() {
     }
     console.log("Positions file has been created");
   });
+
+  fs.writeFile("jobUrls.js", jobUrls, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log("jobUrls file has been created");
+  });
 }
 
 async function executeScrapper(offset, keyword) {
@@ -49,6 +62,7 @@ async function executeScrapper(offset, keyword) {
           const positionPromise = new Promise((resolve, reject) => {
             companies += `INSERT IGNORE INTO newNova.company (name, logo_url) VALUES ('${mock.company}', '${mock.companyLogo}');\n`;
             positions += `INSERT IGNORE INTO newNova.position (company_id, name, post_date, url) VALUES ((SELECT id FROM newNova.company WHERE name = '${mock.company}'), '${mock.position}', '${mock.date}', '${mock.jobUrl}');\n`;
+            jobUrls += `"${mock.jobUrl}",\n`;
             resolve();
           });
 
