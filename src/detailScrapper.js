@@ -14,6 +14,7 @@ axiosRetry(axios, {
 });
 
 module.exports.query = (jobUrl) => getJobs(jobUrl);
+
 async function getJobs(jobUrl) {
   try {
     const userAgent = randomUseragent.getRandom();
@@ -32,7 +33,8 @@ async function getJobs(jobUrl) {
     let allJobs = parseJobList(data);
     return allJobs;
   } catch (error) {
-    console.error("error");
+    console.error("error " + error);
+    return [];
   }
 }
 
