@@ -9,9 +9,10 @@ inner join filter f on (`p`.detail LIKE CONCAT('%', `f`.word, '%')) or (`p`.name
 inner join status s on s.id = p.status_id
 WHERE s.name = 'Review' order by p.id;
 
-UPDATE newNova.position set status_id = (SELECT id from status where name = 'Filtered') WHERE id IN(120,122);
+UPDATE newNova.position set status_id = (SELECT id from status where name = 'Filtered') WHERE id IN();
 
 UPDATE newNova.position set status_id = (SELECT id from status where name = 'Filtered') WHERE company_id IN(SELECT id from company c where c.order < 0);
+
 SELECT (CASE
             WHEN (`c`.`order` = 1) THEN '⭐'
             ELSE ''
