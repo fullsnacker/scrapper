@@ -61,8 +61,9 @@ async function executeScrapper(offset, keyword) {
         const promises = response.map((mock) => {
           const positionPromise = new Promise((resolve, reject) => {
             companies += `INSERT IGNORE INTO newNova.company (name, logo_url) VALUES ('${mock.company}', '${mock.companyLogo}');\n`;
-            positions += `INSERT IGNORE INTO newNova.position (company_id, name, post_date, url) VALUES ((SELECT id FROM newNova.company WHERE name = '${mock.company}'), '${mock.position}', '${mock.date}', '${mock.jobUrl}');\n`;
+            positions += `INSERT IGNORE INTO newNova.position (company_id, name, post_date, url,location) VALUES ((SELECT id FROM newNova.company WHERE name = '${mock.company}'), '${mock.position}', '${mock.date}', '${mock.jobUrl}', '${mock.location}');\n`;
             jobUrls += `"${mock.jobUrl}",\n`;
+
             resolve();
           });
 
