@@ -1,0 +1,1 @@
+SELECT * FROM newNova.to_review;
