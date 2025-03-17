@@ -1,3 +1,3 @@
-const keywords = ["node", "react", "mern", "nest"];
+const keywords = ["node", "react", "mern", "java"];
 
 module.exports = keywords;
