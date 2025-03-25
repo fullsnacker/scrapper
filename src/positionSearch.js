@@ -6,6 +6,8 @@ let companies = "";
 let positions = "";
 let jobUrls = "const jobUrls = [\n";
 
+const dateStr = new Date().getTime();
+
 console.log("Starting the position scrapper");
 
 runSequentially();
@@ -29,7 +31,7 @@ async function runSequentially() {
 
   jobUrls += "];\n\nmodule.exports = jobUrls;";
 
-  fs.writeFile("companies.csv", companies, (err) => {
+  fs.writeFile(`./output/${dateStr}-companies.csv`, companies, (err) => {
     if (err) {
       console.error(err);
       return;
@@ -37,7 +39,7 @@ async function runSequentially() {
     console.log("Companies file has been created");
   });
 
-  fs.writeFile("positions.csv", positions, (err) => {
+  fs.writeFile(`./output/${dateStr}-positions.csv`, positions, (err) => {
     if (err) {
       console.error(err);
       return;
@@ -45,7 +47,7 @@ async function runSequentially() {
     console.log("Positions file has been created");
   });
 
-  fs.writeFile("jobUrls.js", jobUrls, (err) => {
+  fs.writeFile(`./output/${dateStr}-jobUrls.js`, jobUrls, (err) => {
     if (err) {
       console.error(err);
       return;
