@@ -2,6 +2,7 @@ const cheerio = require("cheerio");
 const axios = require("axios");
 const axiosRetry = require("axios-retry");
 const randomUseragent = require("random-useragent");
+const keywords = require("./data/keywords");
 
 axiosRetry(axios, {
   retries: 5,
@@ -13,13 +14,23 @@ axiosRetry(axios, {
   },
 });
 
+const formatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Argentina/Buenos_Aires",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
+
 module.exports.query = (offset, keyword) => getJobs(offset, keyword);
 async function getJobs(offset, keyword) {
   try {
     const myURL =
       "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=" +
       keyword +
-      "&location=Argentina&f_TPR=r86400&start=" +
+      "&location=Argentina&f_TPR=86400&start=" +
       offset +
       "&sortBy=DD";
     const userAgent = randomUseragent.getRandom();
@@ -35,14 +46,14 @@ async function getJobs(offset, keyword) {
       },
     });
     const $ = cheerio.load(data);
-    let allJobs = parseJobList(data);
+    let allJobs = parseJobList(data, offset, keyword);
     return allJobs;
   } catch (error) {
-    console.error("error");
+    console.error(error);
   }
 }
 
-function parseJobList(jobData) {
+function parseJobList(jobData, offset, keyword) {
   const $ = cheerio.load(jobData);
   const jobs = $("li");
   const jobObjects = jobs
@@ -54,30 +65,88 @@ function parseJobList(jobData) {
       const location =
         job.find(".job-search-card__location").text().trim() || "";
       const date = job.find("time").attr("datetime") || "";
-      const salary =
-        job
-          .find(".job-search-card__salary-info")
-          .text()
-          .trim()
-          .replace(/\n/g, "")
-          .replaceAll(" ", "") || "";
+      const dateAgo = job.find("time").text().trim() || "";
       const jobUrl = job.find(".base-card__full-link").attr("href") || "";
       const companyLogo =
         job.find(".artdeco-entity-image").attr("data-delayed-url") || "";
-      const agoTime =
-        job.find(".job-search-card__listdate").text().trim() || "";
+      const searchDate = formatter.format(new Date());
+      const parsedDateAgo = parseDateAgo(dateAgo);
+
+      //get time diff between searchDate and parsedDateAgo
+      const searchDateObj = new Date(searchDate);
+      const parsedDateObj = new Date(parsedDateAgo);
+      const timeDiff = searchDateObj - parsedDateObj;
+      const timeDiffInMinutes = Math.floor(timeDiff / (1000 * 60));
       return {
+        date: date,
+        searchDate: searchDate,
+        parsedDateAgo: parsedDateAgo,
+        timeDiffInMinutes: timeDiffInMinutes,
+        dateAgoString: dateAgo,
         position: position,
         company: company,
         companyLogo: companyLogo,
         location: location,
-        date: date,
-        agoTime: agoTime,
-        salary: salary,
         jobUrl: jobUrl,
+        keyword: keyword,
+        offset: offset,
       };
     })
     .get();
 
+  //order jsonobject by timediffinminutes from smallest to largest
+  jobObjects.sort((a, b) => {
+    const dateA = new Date(a.timeDiffInMinutes);
+    const dateB = new Date(b.timeDiffInMinutes);
+    return dateA - dateB; // Ordenar de más antiguo a más reciente
+  });
+
   return jobObjects;
+}
+
+function parseDateAgo(dateAgo) {
+  const match = dateAgo.match(
+    /^(\d+)\s+(minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)\s+ago$/
+  );
+  if (!match) {
+    throw new Error(`Formato inválido: ${dateAgo}`);
+  }
+
+  const amount = parseInt(match[1], 10);
+  const unit = match[2];
+
+  const result = new Date();
+
+  switch (unit) {
+    case "minute":
+    case "minutes":
+      result.setMinutes(result.getMinutes() - amount);
+      break;
+    case "hour":
+    case "hours":
+      result.setHours(result.getHours() - amount);
+      break;
+    case "day":
+    case "days":
+      result.setHours(result.getHours() - 24 * amount);
+      break;
+    case "week":
+    case "weeks":
+      result.setHours(result.getHours() - 24 * 7 * amount);
+      break;
+    case "month":
+    case "months":
+      result.setHours(result.getHours() - 24 * 30 * amount);
+      break;
+    case "year":
+    case "years":
+      result.setHours(result.getHours() - 24 * 365 * amount);
+      break;
+    default:
+      throw new Error(`Unidad no soportada: ${unit}`);
+  }
+
+  const formattedDate = formatter.format(result);
+
+  return formattedDate;
 }
