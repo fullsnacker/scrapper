@@ -23,16 +23,20 @@ const formatter = new Intl.DateTimeFormat("en-US", {
   minute: "2-digit",
   second: "2-digit",
 });
-
+const urlBase =
+  "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=react&location=Argentina&f_TPR=r86400&start=00&sortBy=DD";
 module.exports.query = (offset, keyword) => getJobs(offset, keyword);
 async function getJobs(offset, keyword) {
   try {
+    console.log(urlBase);
+
     const myURL =
       "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=" +
       keyword +
-      "&location=Argentina&f_TPR=86400&start=" +
+      "&location=Argentina&f_TPR=r86400&start=" +
       offset +
       "&sortBy=DD";
+    console.log(myURL);
     const userAgent = randomUseragent.getRandom();
     const { data } = await axios.get(myURL, {
       headers: {

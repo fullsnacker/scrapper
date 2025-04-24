@@ -35,7 +35,7 @@ async function runSequentially() {
     new Set(results.map((a) => JSON.stringify(a)))
   ).map((e) => JSON.parse(e));
 
-  //filter only the results that have timeDiffInMinutes smaller than  are less than 10080 (Last week)
+  //filter only the results that have timeDiffInMinutes smaller than are less than 10080 (Last week)
   const filteredResults = uniqueResults.filter(
     (item) => item.timeDiffInMinutes < 60 * 24 * 7
   );
